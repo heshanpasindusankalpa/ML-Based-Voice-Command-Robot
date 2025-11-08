@@ -15,8 +15,8 @@
 #define SR       16000
 
 // Action pins
-#define PIN_RIGHT  2
-#define PIN_LEFT   4
+#define AI2  2
+#define BI2   4
 
 // Window & stride
 static const size_t WIN_SAMPLES    = EI_CLASSIFIER_RAW_SAMPLE_COUNT;
@@ -228,10 +228,10 @@ void setup() {
   Serial.begin(115200);
   setupI2S();
 
-  pinMode(PIN_RIGHT, OUTPUT);
-  pinMode(PIN_LEFT, OUTPUT);
-  digitalWrite(PIN_RIGHT, LOW);
-  digitalWrite(PIN_LEFT, LOW);
+  pinMode(AI2, OUTPUT);
+  pinMode(BI2, OUTPUT);
+  digitalWrite(AI2, LOW);
+  digitalWrite(BI2, LOW);
 
   qFrames = xQueueCreate(3, sizeof(frame_ptr_t));
 
@@ -329,11 +329,11 @@ void TaskInfer(void* arg) {
         }
 
         const float CONF = 0.70f;
-        bool is_right = (strcmp(best, "right") == 0);
-        bool is_left  = (strcmp(best, "left") == 0);
+        bool is_right = (strcmp(best, "forward") == 0);
+        bool is_left  = (strcmp(best, "backward") == 0);
 
-        digitalWrite(PIN_RIGHT, (bestp > CONF && is_right) ? HIGH : LOW);
-        digitalWrite(PIN_LEFT,  (bestp > CONF && is_left)  ? HIGH : LOW);
+        digitalWrite(AI2, (bestp > CONF && is_right) ? HIGH : LOW);
+        digitalWrite(BI2,  (bestp > CONF && is_left)  ? HIGH : LOW);
 
         // --- Eye interaction ---
         
