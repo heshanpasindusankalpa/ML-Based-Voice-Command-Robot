@@ -336,12 +336,7 @@ void TaskInfer(void* arg) {
         digitalWrite(PIN_LEFT,  (bestp > CONF && is_left)  ? HIGH : LOW);
 
         // --- Eye interaction ---
-        if (bestp > CONF) {
-          if (is_left)  showEyeMovement("left");
-          if (is_right) showEyeMovement("right");
-        } else {
-          drawNeutralEyes(); // neutral emo eyes when idle
-        }
+        
       }
     }
   }
