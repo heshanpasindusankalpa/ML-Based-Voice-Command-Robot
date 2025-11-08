@@ -17,6 +17,10 @@
 // Action pins
 #define AI2  2
 #define BI2   4
+#define AI1  13
+#define BI1  12
+
+
 
 // Window & stride
 static const size_t WIN_SAMPLES    = EI_CLASSIFIER_RAW_SAMPLE_COUNT;
@@ -232,8 +236,12 @@ void setup() {
   pinMode(BI2, OUTPUT);
   digitalWrite(AI2, LOW);
   digitalWrite(BI2, LOW);
+   pinMode(AI1, OUTPUT);
+  pinMode(BI1, OUTPUT);
+  digitalWrite(AI1, LOW);
+  digitalWrite(BI1, LOW);
 
-  qFrames = xQueueCreate(3, sizeof(frame_ptr_t));
+  qFrames = xQueueCreate(2, sizeof(frame_ptr_t));
 
   xTaskCreatePinnedToCore(TaskAudio, "TaskAudio", 4096, NULL, 3, NULL, 0);
   xTaskCreatePinnedToCore(TaskInfer, "TaskInfer", 7168, NULL, 2, NULL, 1);
@@ -328,12 +336,37 @@ void TaskInfer(void* arg) {
           if (v > bestp) { bestp = v; best = result.classification[i].label; }
         }
 
-        const float CONF = 0.70f;
-        bool is_right = (strcmp(best, "forward") == 0);
-        bool is_left  = (strcmp(best, "backward") == 0);
+        const float CONF = 0.90f;
+        bool is_right = (strcmp(best, "right") == 0);
+        bool is_left  = (strcmp(best, "left") == 0);
+        bool is_forward = (strcmp(best, "forward") == 0);
+        bool is_backward  = (strcmp(best, "backward") == 0);
 
-        digitalWrite(AI2, (bestp > CONF && is_right) ? HIGH : LOW);
-        digitalWrite(BI2,  (bestp > CONF && is_left)  ? HIGH : LOW);
+        digitalWrite(AI1, LOW);
+        digitalWrite(BI1, LOW);
+        digitalWrite(AI2, LOW);
+        digitalWrite(BI2, LOW);
+
+        if (bestp > CONF) {
+        if (is_forward) {
+            // Move forward
+            digitalWrite(AI1, HIGH);
+            digitalWrite(BI1, HIGH);
+        } 
+        else if (is_backward) {
+            // Move backward
+            digitalWrite(AI2, HIGH);
+            digitalWrite(BI2, HIGH);
+        } 
+        else if (is_right) {
+            // Turn right
+            digitalWrite(AI2, HIGH);
+        } 
+        else if (is_left) {
+            // Turn left
+            digitalWrite(BI2, HIGH);
+        }
+    }
 
         // --- Eye interaction ---
         
