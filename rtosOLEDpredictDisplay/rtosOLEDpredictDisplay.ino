@@ -213,7 +213,7 @@ void TaskInfer(void* arg) {
         Serial.printf("Prediction: %s (%.2f)\n", best, bestp);
 
         // --- Motor Control ---
-        const float CONF = 0.70f;
+        const float CONF = 0.50f;
         bool is_right = (strcmp(best, "right") == 0);
         bool is_left  = (strcmp(best, "left") == 0);
         bool is_forward = (strcmp(best, "forward") == 0);
@@ -236,16 +236,17 @@ void TaskInfer(void* arg) {
             digitalWrite(BI2, HIGH);
             digitalWrite(BI1, LOW);
             
-          // } else if (is_forward) {
-          //   digitalWrite(AI2, HIGH);
-          // } else if (is_backward) {
-          //   digitalWrite(BI2, HIGH);
-          // }
+          } else if (is_left) {
+            digitalWrite(AI2, HIGH);
+          } else if (is_right) {
+            digitalWrite(BI2, HIGH);
+          }
         }
       }
     }
   }
 }
+
 
 // ------------------- Loop -------------------
 void loop() {}
