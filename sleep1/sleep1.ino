@@ -312,5 +312,5 @@ void TaskInfer(void* arg) {
 // ------------------- Main Loop -------------------
 void loop() {
   if (millis() - lastEyeUpdate >= EYE_UPDATE_INTERVAL) { updateEyes(); lastEyeUpdate = millis(); }
-  delay(5);
+  delay();
 }
